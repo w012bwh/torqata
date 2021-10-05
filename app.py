@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_paginate import Pagination, get_page_args
 
 
 app = Flask(__name__,template_folder='template')
@@ -43,7 +42,7 @@ class NetflixTitles(db.Model):
 @app.route('/', methods=['GET'])
 def handle_titles():
     if request.method == 'GET':
-        Titles = NetflixTitles.query.all()
+        titles = NetflixTitles.query.all()
         results = [
             {
                 "show_id": title.show_id,
@@ -59,7 +58,7 @@ def handle_titles():
                 "listed_in": title.listed_in,
                 "description": title.description,
 
-            } for title in Titles]
+            } for title in titles]
 
     return {"Number of titles: ": len(results), "Titles: ": results}
 
@@ -97,10 +96,106 @@ def handle_titles_paginated():
     return {"Number of titles: ": len(paginated_results), "Titles: ": results}
 
 
+@app.route('/filter/type', methods=['GET'])
+def filter_type():
+    input_type = request.args.get('type')
+    if request.method == 'GET':
+        titles = NetflixTitles.query.filter(NetflixTitles.type.ilike(input_type))
+        results = [
+            {
+                "show_id": title.show_id,
+                "title": title.title,
+                "type": title.type,
+                "director": title.director,
+                "cast": title.cast,
+                "country": title.country,
+                "date_added": title.date_added,
+                "release_year": title.release_year,
+                "rating": title.rating,
+                "duration": title.duration,
+                "listed_in": title.listed_in,
+                "description": title.description,
+
+            } for title in titles]
+
+    return {"Number of titles of movies: ": len(results), "Titles: ": results}
+
+#?id=8808&title=test&type=test&director=test&cast=test&country=test&date_added=test&release_year=test&rating=test&duration=test&listed_in=test&description=test
+@app.route('/add', methods=['GET'])
+def add_record():
+    input_show_id = request.args.get('id')
+    input_title = request.args.get('title')
+    input_type = request.args.get('type')
+    input_director = request.args.get('director')
+    input_cast = request.args.get('cast')
+    input_country = request.args.get('country')
+    input_date_added = request.args.get('date_added')
+    input_release_year = request.args.get('release_year')
+    input_rating = request.args.get('rating')
+    input_duration = request.args.get('duration')
+    input_listed_in = request.args.get('listed_in')
+    input_description = request.args.get('description')
+
+    if request.method == 'GET':
+        new_record=NetflixTitles(show_id=input_show_id,
+                                 title=input_title,
+                                 type=input_type,
+                                 director=input_director,
+                                 cast=input_cast,
+                                 country=input_country,
+                                 date_added=input_date_added,
+                                 release_year=input_release_year,
+                                 rating=input_rating,
+                                 duration=input_duration,
+                                 listed_in=input_listed_in,
+                                 description=input_description)
+
+        db.session.add(new_record)
+        db.session.commit()
+
+    return "Successfully added to database"
+
+
+
+#?id=s1&title=test&type=test&director=test&cast=test&country=test&date_added=test&release_year=test&rating=test&duration=test&listed_in=test&description=test
+@app.route('/update', methods=['GET'])
+def update_record():
+    input_show_id = request.args.get('id')
+    input_title = request.args.get('title')
+    input_type = request.args.get('type')
+    input_director = request.args.get('director')
+    input_cast = request.args.get('cast')
+    input_country = request.args.get('country')
+    input_date_added = request.args.get('date_added')
+    input_release_year = request.args.get('release_year')
+    input_rating = request.args.get('rating')
+    input_duration = request.args.get('duration')
+    input_listed_in = request.args.get('listed_in')
+    input_description = request.args.get('description')
+
+    get_title = NetflixTitles.query.get(input_show_id)
+
+    get_title.title = input_title
+    get_title.type = input_type
+    get_title.director = input_director
+    get_title.cast = input_cast
+    get_title.country = input_country
+    get_title.date_added = input_date_added
+    get_title.release_year = input_release_year
+    get_title.rating = input_rating
+    get_title.duration = input_duration
+    get_title.listed_in = input_listed_in
+    get_title.description = input_description
+
+    db.session.commit()
+
+    return "Successfully updated record in database"
+
+
 @app.route('/stats/release_year/', methods=['GET'])
 def release_year_stats():
     if request.method == 'GET':
-        years = NetflixTitles.query.with_entities(NetflixTitles.release_year).all()
+        years = NetflixTitles.query.with_entities(NetflixTitles).all()
 
         release_year_count = {}
 
@@ -114,14 +209,13 @@ def release_year_stats():
                 oldCount =  release_year_count[year[0]]
                 release_year_count[year[0]] = oldCount + 1
 
+
     return release_year_count
 
 @app.route('/stats/country/', methods=['GET'])
 def country_stats():
     if request.method == 'GET':
         group_countrys = NetflixTitles.query.with_entities(NetflixTitles.country).all()
-
-        # group_countrys = ",".join(group_countrys)
 
         country_count = {}
 
@@ -135,7 +229,7 @@ def country_stats():
                     country_count[country] = 1
 
                 else:
-                    oldCount =  country_count[country]
+                    oldCount = country_count[country]
                     country_count[country] = oldCount + 1
 
     return country_count
@@ -196,52 +290,6 @@ def rating_stats():
                 ratings_count[rating[0]] = oldCount + 1
 
     return ratings_count
-
-@app.route('/filter/type/movie', methods=['GET'])
-def filter_by_movie():
-    if request.method == 'GET':
-        Titles = NetflixTitles.query.filter(NetflixTitles.type.ilike("movie"))
-        results = [
-            {
-                "show_id": title.show_id,
-                "title": title.title,
-                "type": title.type,
-                "director": title.director,
-                "cast": title.cast,
-                "country": title.country,
-                "date_added": title.date_added,
-                "release_year": title.release_year,
-                "rating": title.rating,
-                "duration": title.duration,
-                "listed_in": title.listed_in,
-                "description": title.description,
-
-            } for title in Titles]
-
-    return {"Number of titles of movies: ": len(results), "Titles: ": results}
-
-@app.route('/filter/type/tvshow', methods=['GET'])
-def filter_by_tvshow():
-    if request.method == 'GET':
-        Titles = NetflixTitles.query.filter(NetflixTitles.type.ilike("tv show"))
-        results = [
-            {
-                "show_id": title.show_id,
-                "title": title.title,
-                "type": title.type,
-                "director": title.director,
-                "cast": title.cast,
-                "country": title.country,
-                "date_added": title.date_added,
-                "release_year": title.release_year,
-                "rating": title.rating,
-                "duration": title.duration,
-                "listed_in": title.listed_in,
-                "description": title.description,
-
-            } for title in Titles]
-
-    return {"Number of titles of movies: ": len(results), "Titles: ": results}
 
 
 
