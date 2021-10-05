@@ -64,32 +64,37 @@ def handle_titles():
     return {"Number of titles: ": len(results), "Titles: ": results}
 
 
-ROWS_PER_PAGE = 25
 @app.route('/pagination', methods=['GET'])
 def handle_titles_paginated():
+    ROWS_PER_PAGE = 25
+
     if request.method == 'GET':
 
         page = request.args.get('page', 1, type=int)
 
         results = NetflixTitles.query.paginate(page=page, per_page=ROWS_PER_PAGE)
-        # results = [
-        #     {
-        #         "show_id": title.show_id,
-        #         "title": title.title,
-        #         "type": title.type,
-        #         "director": title.director,
-        #         "cast": title.cast,
-        #         "country": title.country,
-        #         "date_added": title.date_added,
-        #         "release_year": title.release_year,
-        #         "rating": title.rating,
-        #         "duration": title.duration,
-        #         "listed_in": title.listed_in,
-        #         "description": title.description,
-        #
-        #     } for title in Titles]
+        paginated_results = (results.items)
 
-    return render_template('pagination_example.html', results=results)
+        results = [
+            {
+                "show_id": title.show_id,
+                "title": title.title,
+                "type": title.type,
+                "director": title.director,
+                "cast": title.cast,
+                "country": title.country,
+                "date_added": title.date_added,
+                "release_year": title.release_year,
+                "rating": title.rating,
+                "duration": title.duration,
+                "listed_in": title.listed_in,
+                "description": title.description,
+
+            } for title in paginated_results]
+
+
+
+    return {"Number of titles: ": len(paginated_results), "Titles: ": results}
 
 
 @app.route('/stats/release_year/', methods=['GET'])
@@ -191,6 +196,52 @@ def rating_stats():
                 ratings_count[rating[0]] = oldCount + 1
 
     return ratings_count
+
+@app.route('/filter/type/movie', methods=['GET'])
+def filter_by_movie():
+    if request.method == 'GET':
+        Titles = NetflixTitles.query.filter(NetflixTitles.type.ilike("movie"))
+        results = [
+            {
+                "show_id": title.show_id,
+                "title": title.title,
+                "type": title.type,
+                "director": title.director,
+                "cast": title.cast,
+                "country": title.country,
+                "date_added": title.date_added,
+                "release_year": title.release_year,
+                "rating": title.rating,
+                "duration": title.duration,
+                "listed_in": title.listed_in,
+                "description": title.description,
+
+            } for title in Titles]
+
+    return {"Number of titles of movies: ": len(results), "Titles: ": results}
+
+@app.route('/filter/type/tvshow', methods=['GET'])
+def filter_by_tvshow():
+    if request.method == 'GET':
+        Titles = NetflixTitles.query.filter(NetflixTitles.type.ilike("tv show"))
+        results = [
+            {
+                "show_id": title.show_id,
+                "title": title.title,
+                "type": title.type,
+                "director": title.director,
+                "cast": title.cast,
+                "country": title.country,
+                "date_added": title.date_added,
+                "release_year": title.release_year,
+                "rating": title.rating,
+                "duration": title.duration,
+                "listed_in": title.listed_in,
+                "description": title.description,
+
+            } for title in Titles]
+
+    return {"Number of titles of movies: ": len(results), "Titles: ": results}
 
 
 
