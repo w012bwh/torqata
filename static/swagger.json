@@ -1,0 +1,218 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "Netflix movies and TV shows. API UI developed by swgger",
+		"version": "1.0",
+		"title": "Netflix titles"
+
+	},
+	"host": "127.0.0.1",
+	"basePath": "/",
+	"tags": [{
+		"name": "Titles",
+		"description": "The base url will retrieve everything from the database"
+	}],
+	"paths": {
+		"/pagination": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list of paginated data",
+				"description": "",
+				"operationId": "pagination",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/fitler/type": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list either by movie or tv show",
+				"description": "",
+				"operationId": "filter_type",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/stats/release_year": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list of how many movies/tv shows were released in a certain year",
+				"description": "",
+				"operationId": "release_year_stats",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/stats/country": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list of how many movie/tv show",
+				"description": "",
+				"operationId": "release_year_stats",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/stats/director": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list of how many times a director is in the list",
+				"description": "",
+				"operationId": "director_stats",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/stats/type": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list of how many movies or tv shows there are",
+				"description": "",
+				"operationId": "type_stats",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/stats/rating": {
+			"get": {
+				"tags": ["Titles"],
+				"summary": "returns a list of how many there are per rating",
+				"description": "",
+				"operationId": "rating_stats",
+				"consumes": [""],
+				"produces": ["application/json"],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/update": {
+			"post": {
+				"tags": ["Titles"],
+				"summary": "Add a new movie/tv show to the list",
+				"description": "",
+				"operationId": "add_record",
+				"consumes": ["application/json", "application/xml"],
+				"produces": ["application/json", "application/xml"],
+				"parameters": [{
+					"in": "body",
+					"name": "body",
+					"description": "movie/tv object that needs to be added to the list",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/shows"
+					}
+				}],
+				"responses": {
+					"405": {
+						"description": "Invalid input"
+					},
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/ApiResponse"
+						}
+					}
+				}
+			}
+		},
+		"/put": {
+
+			"put": {
+				"tags": ["Titles"],
+				"summary": "Update an existing movie/tv show",
+				"description": "",
+				"operationId": "update_record",
+				"consumes": ["application/json", "application/xml"],
+				"produces": ["application/json", "application/xml"],
+				"parameters": [{
+					"in": "body",
+					"name": "body",
+					"description": "movie/tv show object that needs to be updated to the list",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/shows"
+					}
+				}]
+
+			}
+		},
+		"/delete": {
+			"delete": {
+				"tags": ["Titles"],
+				"summary": "Remove movie/tv show by id",
+				"description": "",
+				"operationId": "delete_record",
+				"produces": [""],
+				"parameters": [{
+					"show_id": "id",
+					"description": "the show ID",
+					"required": true,
+					"type": "string"
+
+				}]
+
+
+			}
+		}
+
+	},
+
+	"externalDocs": {
+		"description": "Find out more about Swagger",
+		"url": "http://swagger.io"
+	}
+}

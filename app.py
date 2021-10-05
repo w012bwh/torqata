@@ -1,10 +1,35 @@
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_swagger_ui import get_swaggerui_blueprint
 
 
-app = Flask(__name__,template_folder='template')
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:EIhk4vxIwBd3gdPo@34.135.240.167:5432/netflix_data"
 db = SQLAlchemy(app)
+
+SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/static/swagger.json'  # Our API url (can of course be a local resource)
+
+# Call factory function to create our blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,  # Swagger UI static files will be mapped to '{SWAGGER_URL}/dist/'
+    API_URL,
+    config={  # Swagger UI config overrides
+        'app_name': "Netflix application"
+    },
+    # oauth_config={  # OAuth config. See https://github.com/swagger-api/swagger-ui#oauth2-configuration .
+    #    'clientId': "your-client-id",
+    #    'clientSecret': "your-client-secret-if-required",
+    #    'realm': "your-realms",
+    #    'appName': "your-app-name",
+    #    'scopeSeparator': " ",
+    #    'additionalQueryStringParams': {'test': "hello"}
+    # }
+)
+
+app.register_blueprint(swaggerui_blueprint)
+
+
 
 class NetflixTitles(db.Model):
 
@@ -60,7 +85,8 @@ def handle_titles():
 
             } for title in titles]
 
-    return {"Number of titles: ": len(results), "Titles: ": results}
+    return {"Number of titles: ": len(results),
+            "Titles: ": results}
 
 
 @app.route('/pagination', methods=['GET'])
@@ -93,7 +119,8 @@ def handle_titles_paginated():
 
 
 
-    return {"Number of titles: ": len(paginated_results), "Titles: ": results}
+    return {"Number of titles: ": len(paginated_results),
+            "Titles: ": results}
 
 
 @app.route('/filter/type', methods=['GET'])
@@ -118,10 +145,11 @@ def filter_type():
 
             } for title in titles]
 
-    return {"Number of titles of movies: ": len(results), "Titles: ": results}
+    return {"Number of titles of movies: ": len(results),
+            "Titles: ": results}
 
 #?id=8808&title=test&type=test&director=test&cast=test&country=test&date_added=test&release_year=test&rating=test&duration=test&listed_in=test&description=test
-@app.route('/add', methods=['GET'])
+@app.route('/add', methods=['POST'])
 def add_record():
     input_show_id = request.args.get('id')
     input_title = request.args.get('title')
@@ -136,7 +164,7 @@ def add_record():
     input_listed_in = request.args.get('listed_in')
     input_description = request.args.get('description')
 
-    if request.method == 'GET':
+    if request.method == 'POST':
         new_record=NetflixTitles(show_id=input_show_id,
                                  title=input_title,
                                  type=input_type,
@@ -158,7 +186,7 @@ def add_record():
 
 
 #?id=s1&title=test&type=test&director=test&cast=test&country=test&date_added=test&release_year=test&rating=test&duration=test&listed_in=test&description=test
-@app.route('/update', methods=['GET'])
+@app.route('/update', methods=['PUT'])
 def update_record():
     input_show_id = request.args.get('id')
     input_title = request.args.get('title')
@@ -173,23 +201,42 @@ def update_record():
     input_listed_in = request.args.get('listed_in')
     input_description = request.args.get('description')
 
-    get_title = NetflixTitles.query.get(input_show_id)
+    if request.method == 'PUT':
 
-    get_title.title = input_title
-    get_title.type = input_type
-    get_title.director = input_director
-    get_title.cast = input_cast
-    get_title.country = input_country
-    get_title.date_added = input_date_added
-    get_title.release_year = input_release_year
-    get_title.rating = input_rating
-    get_title.duration = input_duration
-    get_title.listed_in = input_listed_in
-    get_title.description = input_description
+        get_title = NetflixTitles.query.get(input_show_id)
 
-    db.session.commit()
+        get_title.title = input_title
+        get_title.type = input_type
+        get_title.director = input_director
+        get_title.cast = input_cast
+        get_title.country = input_country
+        get_title.date_added = input_date_added
+        get_title.release_year = input_release_year
+        get_title.rating = input_rating
+        get_title.duration = input_duration
+        get_title.listed_in = input_listed_in
+        get_title.description = input_description
+
+        db.session.commit()
 
     return "Successfully updated record in database"
+
+
+
+#?id=s1
+@app.route('/delete', methods=['DELETE'])
+def delete_record():
+    input_show_id = request.args.get('id')
+
+    if request.method == 'DELETE':
+
+        get_title = NetflixTitles.query.get(input_show_id)
+        db.session.delete(get_title)
+        db.session.commit()
+
+    return "Successfully removed record in database"
+
+
 
 
 @app.route('/stats/release_year/', methods=['GET'])
