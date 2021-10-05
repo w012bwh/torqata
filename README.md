@@ -15,7 +15,7 @@ Software could use but not required
 
 Steps to setup environment
 
-the database will be running in GoogleCloudDB however, you can edit the sql script to create new instance
+The PostgresSQL database is running in GoogleCloudDB however, you can edit the sql script to create new instance
 
 make sure the project is a folder in your c:\ directory named torqata or else the script will fail otherwise edit the 
 file to where the csv file is located. 
