@@ -8,12 +8,12 @@ python libraries needed before running
 
     pip install flask_swagger_ui
 
-Software could use but not required
+Optional software to use
 
     postman - send get/post/put/delete
     DataGrip / whatever you may use to connect to a database
 
-Steps to setup environment
+Steps to set up environment
 
 The PostgresSQL database is running in GoogleCloudDB however, you can edit the sql script to create new instance
 

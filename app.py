@@ -16,20 +16,10 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     API_URL,
     config={  # Swagger UI config overrides
         'app_name': "Netflix application"
-    },
-    # oauth_config={  # OAuth config. See https://github.com/swagger-api/swagger-ui#oauth2-configuration .
-    #    'clientId': "your-client-id",
-    #    'clientSecret': "your-client-secret-if-required",
-    #    'realm': "your-realms",
-    #    'appName': "your-app-name",
-    #    'scopeSeparator': " ",
-    #    'additionalQueryStringParams': {'test': "hello"}
-    # }
+    }
 )
 
 app.register_blueprint(swaggerui_blueprint)
-
-
 
 class NetflixTitles(db.Model):
 
@@ -334,8 +324,6 @@ def rating_stats():
                 ratings_count[rating[0]] = oldCount + 1
 
     return ratings_count
-
-
 
 if __name__ == '__main__':
     app.run()

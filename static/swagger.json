@@ -28,7 +28,7 @@
 				}
 			}
 		},
-		"/fitler/type": {
+		"/filter/type": {
 			"get": {
 				"tags": ["Titles"],
 				"summary": "returns a list either by movie or tv show",
