@@ -122,7 +122,8 @@ def handle_titles_paginated():
     return {"Number of titles: ": len(paginated_results),
             "Titles: ": results}
 
-
+#?type=movie
+#?type=tv show
 @app.route('/filter/type', methods=['GET'])
 def filter_type():
     input_type = request.args.get('type')
@@ -242,10 +243,9 @@ def delete_record():
 @app.route('/stats/release_year/', methods=['GET'])
 def release_year_stats():
     if request.method == 'GET':
-        years = NetflixTitles.query.with_entities(NetflixTitles).all()
+        years = NetflixTitles.query.with_entities(NetflixTitles.release_year).all()
 
         release_year_count = {}
-
 
         for year in years:
 
@@ -253,9 +253,8 @@ def release_year_stats():
                 release_year_count[year[0]] = 1
 
             else:
-                oldCount =  release_year_count[year[0]]
+                oldCount = release_year_count[year[0]]
                 release_year_count[year[0]] = oldCount + 1
-
 
     return release_year_count
 
@@ -265,8 +264,6 @@ def country_stats():
         group_countrys = NetflixTitles.query.with_entities(NetflixTitles.country).all()
 
         country_count = {}
-
-        country_null_count = 0
 
         for countrys in group_countrys:
             countrys = countrys[0].split(',')
